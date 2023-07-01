@@ -3,7 +3,7 @@ val Scala213 = "2.13.11"
 val Scala3 = "3.3.0"
 
 
-ThisBuild / scalaVersion := Scala212
+ThisBuild / scalaVersion := Scala213
 ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / organization := "com.pairwiseltd"
 ThisBuild / organizationName := "Pairwise Software Ltd."
@@ -19,9 +19,9 @@ lazy val root = (project in file("."))
       "org.scalatestplus" %% "scalacheck-1-15" % "3.2.3.0" % Test)
   )
 
-//coverageFailOnMinimum := true
-//coverageMinimumStmtTotal := 100
-//coverageMinimumBranchTotal := 100
+coverageFailOnMinimum := true
+coverageMinimumStmtTotal := 100
+coverageMinimumBranchTotal := 100
 
 crossScalaVersions := Seq(Scala3, Scala212, Scala213)
 

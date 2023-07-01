@@ -5,7 +5,7 @@ import org.scalacheck.Gen
 import scala.reflect.runtime.universe._
 
 object CaseClassDataGen {
-  val mirror = runtimeMirror(getClass.getClassLoader)
+  private val mirror = runtimeMirror(getClass.getClassLoader)
 
   def apply[T: TypeTag]: Gen[T] = {
     val method = typeOf[T].companion.decl(TermName("apply")).asMethod
@@ -13,9 +13,13 @@ object CaseClassDataGen {
     val args = params.map { param =>
       param.info match {
         case t if t =:= typeOf[Int] => Gen.chooseNum(Int.MinValue, Int.MaxValue)
+        case t if t =:= typeOf[Byte] => Gen.chooseNum(Byte.MinValue, Byte.MaxValue)
+        case t if t =:= typeOf[Short] => Gen.chooseNum(Short.MinValue, Short.MaxValue)
         case t if t =:= typeOf[Long] => Gen.chooseNum(Long.MinValue, Long.MaxValue)
-        case t if t =:= typeOf[String] => Gen.alphaNumStr
         case t if t =:= typeOf[Boolean] => Gen.oneOf(true, false)
+        case t if t =:= typeOf[Float] => Gen.chooseNum(Float.MinValue, Float.MaxValue)
+        case t if t =:= typeOf[Double] => Gen.chooseNum(Double.MinValue, Double.MaxValue)
+        case t if t =:= typeOf[String] => Gen.alphaNumStr
         case t => throw new UnsupportedOperationException(s"doesn't support generating $t")
       }
     }
