@@ -23,6 +23,10 @@ coverageFailOnMinimum := true
 coverageMinimumStmtTotal := 100
 coverageMinimumBranchTotal := 100
 
+import com.github.sbt.findbugs.FindbugsPlugin.autoImport._
+
+findbugsExcludeFilters := Some(xml.XML.loadFile("findbugs-exclude.xml"))
+
 crossScalaVersions := Seq(Scala3, Scala212, Scala213)
 
 

@@ -1,0 +1,8 @@
+<FindBugsFilter>
+    <Match>
+        <Bug pattern="NM_METHOD_NAMING_CONVENTION">
+            <Class name="com.pairwiseltd.casecheckgen.utils.TypeTagUtils" />
+            <Class name="com.pairwiseltd.casecheckgen.utils.TypeTagUtils$" />
+        </Bug>
+    </Match>
+</FindBugsFilter>
