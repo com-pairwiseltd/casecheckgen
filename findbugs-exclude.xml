@@ -5,4 +5,10 @@
             <Class name="com.pairwiseltd.casecheckgen.utils.TypeTagUtils$" />
         </Bug>
     </Match>
+    <Match>
+        <Bug pattern="SE_BAD_FIELD">
+            <Class name="com.pairwiseltd.casecheckgen.utils.TypeTagUtils" />
+            <Class name="com.pairwiseltd.casecheckgen.utils.TypeTagUtils$" />
+        </Bug>
+    </Match>
 </FindBugsFilter>

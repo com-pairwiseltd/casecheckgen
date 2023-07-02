@@ -32,4 +32,13 @@ class TypeTagUtilsSpec extends AnyWordSpec
       }
     }
   }
+  "TypeWithTypeTagSupport type class" when {
+    "asTypeTag attached to Type called on simple type" should {
+      "return the TypeTag" in {
+        val typ = typeOf[Option[Int]]
+        import TypeTagUtils._
+        typ.asTypeTag.toString shouldBe "TypeTag[Option[Int]]"
+      }
+    }
+  }
 }

@@ -1,6 +1,6 @@
 package com.pairwiseltd.casecheckgen
 
-import com.pairwiseltd.casecheckgen.model.{NestedCaseClass, SimpleCaseClass, SimpleCaseClassWithCollectionHKT, SimpleCaseClassWithHigherKindedType, SimpleClass}
+import com.pairwiseltd.casecheckgen.model.{NestedCaseClass, SimpleCaseClass, SimpleCaseClassWithCollectionHKT, SimpleCaseClassWithDeepNestedOptionHKT, SimpleCaseClassWithNestedOptionHKT, SimpleCaseClassWithOptionHKT, SimpleClass}
 import org.scalacheck.Prop.forAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -41,8 +41,26 @@ class CaseClassDataGenSpec extends AnyWordSpec
   "called with a simple case class type with higher kinded Option fields with basic types" should {
     "create a generator to be used with scalacheck forAll quantifier" in {
 
-      val property = forAll(CaseClassDataGen[SimpleCaseClassWithHigherKindedType]) { simpleCaseClassWithHigherKindedType =>
-        simpleCaseClassWithHigherKindedType.productArity == 8
+      val property = forAll(CaseClassDataGen[SimpleCaseClassWithOptionHKT]) { simpleCaseClassWithOptionHKT =>
+        simpleCaseClassWithOptionHKT.productArity == 8
+      }
+      check(property)
+    }
+  }
+  "called with a simple case class type with higher kinded Option fields with nested Option types" should {
+    "create a generator to be used with scalacheck forAll quantifier" in {
+
+      val property = forAll(CaseClassDataGen[SimpleCaseClassWithNestedOptionHKT]) { simpleCaseClassWithNestedOptionHKT =>
+        simpleCaseClassWithNestedOptionHKT.productArity == 8
+      }
+      check(property)
+    }
+  }
+  "called with a simple case class type with higher kinded Option fields with deep nested Option types" should {
+    "create a generator to be used with scalacheck forAll quantifier" in {
+
+      val property = forAll(CaseClassDataGen[SimpleCaseClassWithDeepNestedOptionHKT]) { simpleCaseClassWithDeepNestedOptionHKT =>
+        simpleCaseClassWithDeepNestedOptionHKT.productArity == 1
       }
       check(property)
     }
