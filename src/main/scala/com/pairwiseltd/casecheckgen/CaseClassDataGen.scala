@@ -25,6 +25,14 @@ object CaseClassDataGen {
           case t if t =:= typeOf[Float] => Gen.chooseNum(Float.MinValue, Float.MaxValue)
           case t if t =:= typeOf[Double] => Gen.chooseNum(Double.MinValue, Double.MaxValue)
           case t if t =:= typeOf[String] => Gen.alphaNumStr
+          case t if t =:= typeOf[Option[Int]] => Gen.option(Gen.chooseNum(Int.MinValue, Int.MaxValue))
+          case t if t =:= typeOf[Option[Byte]] => Gen.option(Gen.chooseNum(Byte.MinValue, Byte.MaxValue))
+          case t if t =:= typeOf[Option[Short]] => Gen.option(Gen.chooseNum(Short.MinValue, Short.MaxValue))
+          case t if t =:= typeOf[Option[Long]] => Gen.option(Gen.chooseNum(Long.MinValue, Long.MaxValue))
+          case t if t =:= typeOf[Option[Boolean]] => Gen.option(Gen.oneOf(true, false))
+          case t if t =:= typeOf[Option[Float]] => Gen.option(Gen.chooseNum(Float.MinValue, Float.MaxValue))
+          case t if t =:= typeOf[Option[Double]] => Gen.option(Gen.chooseNum(Double.MinValue, Double.MaxValue))
+          case t if t =:= typeOf[Option[String]] => Gen.option(Gen.alphaNumStr)
           case t if typeSignature.typeSymbol.isClass
             && typeSignature.typeSymbol.asClass.isCaseClass => CaseClassDataGen(param.asTypeTag)
           case t => throw new IllegalArgumentException(s"doesn't support generating $t")

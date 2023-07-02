@@ -1,6 +1,6 @@
 package com.pairwiseltd.casecheckgen
 
-import com.pairwiseltd.casecheckgen.model.{NestedCaseClass, SimpleCaseClass, SimpleCaseClassWithHigherKindedType, SimpleClass}
+import com.pairwiseltd.casecheckgen.model.{NestedCaseClass, SimpleCaseClass, SimpleCaseClassWithCollectionHKT, SimpleCaseClassWithHigherKindedType, SimpleClass}
 import org.scalacheck.Prop.forAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -38,10 +38,19 @@ class CaseClassDataGenSpec extends AnyWordSpec
       }
     }
   }
-  "called with a simple case class type with higher kinded fields" should {
-    "throw IllegalArgumentException" in {
+  "called with a simple case class type with higher kinded Option fields with basic types" should {
+    "create a generator to be used with scalacheck forAll quantifier" in {
+
+      val property = forAll(CaseClassDataGen[SimpleCaseClassWithHigherKindedType]) { simpleCaseClassWithHigherKindedType =>
+        simpleCaseClassWithHigherKindedType.productArity == 8
+      }
+      check(property)
+    }
+  }
+  "called with a simple case class type with other unsupported higher kinded fields" should {
+    "throw an IllegalArgumentException" in {
       assertThrows[IllegalArgumentException] {
-        val property = forAll(CaseClassDataGen[SimpleCaseClassWithHigherKindedType]) { _ =>
+        val property = forAll(CaseClassDataGen[SimpleCaseClassWithCollectionHKT]) { simpleCaseClassWithCollectionHKT =>
           true
         }
         check(property)
