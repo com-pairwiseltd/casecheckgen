@@ -159,14 +159,51 @@ class CaseClassDataGenSpec extends AnyWordSpec
       check(property)
     }
   }
-  "called with a simple case class type with unsupported HKT" should {
+  "called with a simple case class type with higher kinded Set fields of basic types" should {
+    "create a generator to be used with scalacheck forAll quantifier" in {
+      val property = forAll(CaseClassDataGen[SimpleCaseClassWithSetHKT]) { simpleCaseClassWithSetHKT =>
+        simpleCaseClassWithSetHKT.productArity == 8      }
+      check(property)
+
+    }
+  }
+  "called with a simple case class type with deep nested higher kinded Set fields of basic types" should {
+    "create a generator to be used with scalacheck forAll quantifier" in {
+      val property = forAll(CaseClassDataGen[SimpleCaseClassWithDeepNestedSetHKT]) { simpleCaseClassWithDeepNestedSetHKT =>
+        simpleCaseClassWithDeepNestedSetHKT.productArity == 8
+      }
+      check(property)
+
+    }
+  }
+  "called with a nested simple case class type in Set HKT" should {
+    "create a generator to be used with scalacheck forAll quantifier" in {
+      val property = forAll(CaseClassDataGen[NestedCaseClassWithSetHKT]) { nestedCaseClassWithSetHKT =>
+        nestedCaseClassWithSetHKT.productArity == 1 &&
+          ((!nestedCaseClassWithSetHKT.simpleSet.isEmpty &&
+            nestedCaseClassWithSetHKT.simpleSet.headOption.map(_.productArity) == Some(8)) ||
+            nestedCaseClassWithSetHKT.simpleSet.isEmpty)
+      }
+      check(property)
+    }
+  }
+  "called with a nested simple case class type in deep nested Set HKT" should {
+    "create a generator to be used with scalacheck forAll quantifier" in {
+      val property = forAll(CaseClassDataGen[NestedCaseClassWithDeepNestedSetHKT]) { nestedCaseClassWithDeepNestedSetHKT =>
+        nestedCaseClassWithDeepNestedSetHKT.productArity == 1
+      }
+      check(property)
+    }
+  }
+  "called with an unsupported HKT" should {
     "throw IllegalArgumentException" in {
       assertThrows[IllegalArgumentException]{
-        val property = forAll(CaseClassDataGen[SimpleCaseClassWithSetHKT]) { simpleCaseClassWithSetHKT =>
-          simpleCaseClassWithSetHKT.productArity == 1
+        val property = forAll(CaseClassDataGen[SimpleCaseClassWithMapHKT]) { _ =>
+          true
         }
         check(property)
       }
+
     }
   }
 }

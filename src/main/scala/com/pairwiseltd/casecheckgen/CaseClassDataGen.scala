@@ -31,6 +31,8 @@ object CaseClassDataGen {
         Gen.option(CaseClassDataGen(t.typeArgs.head.asTypeTag)).asInstanceOf[Gen[T]]
       case t if t.erasure =:= typeOf[Seq[Any]] || t.erasure =:= typeOf[List[Any]] =>
         Gen.nonEmptyListOf(CaseClassDataGen(t.typeArgs.head.asTypeTag)).asInstanceOf[Gen[T]]
+      case t if t.erasure =:= typeOf[Set[_]] =>
+        Gen.nonEmptyListOf(CaseClassDataGen(t.typeArgs.head.asTypeTag)).map(_.toSet).asInstanceOf[Gen[T]]
       case _ =>
         Try {
           val method = typeOf[T].companion.decl(TermName("apply")).asMethod
@@ -59,6 +61,8 @@ object CaseClassDataGen {
                 Gen.option(CaseClassDataGen(param.info.typeArgs.head.asTypeTag))
               case t if t.erasure =:= typeOf[Seq[Any]] || t.erasure =:= typeOf[List[Any]] =>
                 Gen.nonEmptyListOf(CaseClassDataGen(param.info.typeArgs.head.asTypeTag))
+              case t if t.erasure =:= typeOf[Set[_]] =>
+                Gen.nonEmptyListOf(CaseClassDataGen(param.info.typeArgs.head.asTypeTag)).map(_.toSet)
               case t if typeSignature.typeSymbol.isClass
                 && typeSignature.typeSymbol.asClass.isCaseClass => CaseClassDataGen(param.asTypeTag)
               case t =>
