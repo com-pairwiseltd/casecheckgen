@@ -1,6 +1,6 @@
 package com.pairwiseltd.casecheckgen
 
-import com.pairwiseltd.casecheckgen.model.{NestedCaseClass, SimpleCaseClass, SimpleCaseClassWithCollectionHKT, SimpleCaseClassWithDeepNestedOptionHKT, SimpleCaseClassWithNestedOptionHKT, SimpleCaseClassWithOptionHKT, SimpleClass}
+import com.pairwiseltd.casecheckgen.model.{NestedCaseClass, NestedCaseClassWithDeepNestedOptionHKT, NestedCaseClassWithOptionHKT, SimpleCaseClass, SimpleCaseClassWithCollectionHKT, SimpleCaseClassWithDeepNestedOptionHKT, SimpleCaseClassWithNestedOptionHKT, SimpleCaseClassWithOptionHKT, SimpleClass}
 import org.scalacheck.Prop.forAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -23,6 +23,26 @@ class CaseClassDataGenSpec extends AnyWordSpec
         val property = forAll(CaseClassDataGen[NestedCaseClass]) { nestedCaseClass =>
           nestedCaseClass.productArity == 1 &&
             nestedCaseClass.simple.productArity == 8
+        }
+        check(property)
+      }
+    }
+    "called with a nested simple case class type in Option HKT" should {
+      "create a nested case class generator to be used with scalacheck forAll quantifier" in {
+        val property = forAll(CaseClassDataGen[NestedCaseClassWithOptionHKT]) { nestedCaseClassWithOptionHKT =>
+          nestedCaseClassWithOptionHKT.productArity == 1 &&
+            ((nestedCaseClassWithOptionHKT.simpleOption.isDefined &&
+              nestedCaseClassWithOptionHKT.simpleOption.map(_.productArity) == Some(8)) ||
+              nestedCaseClassWithOptionHKT.simpleOption.isEmpty)
+        }
+        check(property)
+      }
+    }
+    "called with a nested simple case class type in deep nested Option HKT" should {
+      "create a nested case class generator to be used with scalacheck forAll quantifier" in {
+        val property = forAll(CaseClassDataGen[NestedCaseClassWithDeepNestedOptionHKT]) { nestedCaseClassWithDeepNestedOptionHKT =>
+          println(nestedCaseClassWithDeepNestedOptionHKT)
+          nestedCaseClassWithDeepNestedOptionHKT.productArity == 1
         }
         check(property)
       }
