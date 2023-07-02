@@ -3,9 +3,8 @@ package com.pairwiseltd.casecheckgen
 import com.pairwiseltd.casecheckgen.utils.TypeTagUtils._
 import org.scalacheck.Gen
 
-import scala.reflect.runtime.universe
-import scala.util.{Failure, Success, Try}
 import scala.reflect.runtime.universe._
+import scala.util.{Failure, Success, Try}
 
 object CaseClassDataGen {
   private val mirror = runtimeMirror(getClass.getClassLoader)

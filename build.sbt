@@ -13,8 +13,6 @@ lazy val root = (project in file("."))
     name := "casecheckgen",
     libraryDependencies ++= Seq("org.scalacheck" %% "scalacheck" % "1.17.0",
       "org.scala-lang" % "scala-reflect" % "2.13.10",
-      "com.chuusai" %% "shapeless" % "2.3.10",
-      "org.typelevel" %% "cats-core" % "2.9.0",
       "org.scalatest" %% "scalatest" % "3.2.14" % Test,
       "org.scalatestplus" %% "scalacheck-1-15" % "3.2.3.0" % Test)
   )
