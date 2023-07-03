@@ -201,6 +201,14 @@ class CaseClassDataGenSpec extends AnyWordSpec
         check(property)
       }
     }
+    "called with a nested simple case class type in Map HKT" should {
+      "create a generator to be used with scalacheck forAll quantifier" in {
+        val property = forAll(CaseClassDataGen[NestedCaseClassWithMapHigherKindedValueTypesHKT]) { nestedCaseClassWithMapHigherKindedValueTypesHKT =>
+          nestedCaseClassWithMapHigherKindedValueTypesHKT.productArity == 8
+        }
+        check(property)
+      }
+    }
   }
   "CaseClassDataGen for simple classes" when {
 
