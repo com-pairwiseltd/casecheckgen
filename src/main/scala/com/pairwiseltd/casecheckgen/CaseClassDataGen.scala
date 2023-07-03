@@ -31,12 +31,12 @@ object CaseClassDataGen {
       case t if t.erasure =:= typeOf[Option[Any]] =>
         Gen.option(CaseClassDataGen(t.typeArgs.head.asTypeTag)).asInstanceOf[Gen[T]]
       case t if t.erasure =:= typeOf[Seq[Any]] || t.erasure =:= typeOf[List[Any]] =>
-        Gen.nonEmptyListOf(CaseClassDataGen(t.typeArgs.head.asTypeTag))
+        Gen.listOfN(3, CaseClassDataGen(t.typeArgs.head.asTypeTag))
           .asInstanceOf[Gen[T]]
       case t if t.erasure =:= typeOf[Set[_]] =>
-        Gen.nonEmptyListOf(CaseClassDataGen(t.typeArgs.head.asTypeTag)).map(_.toSet).asInstanceOf[Gen[T]]
+        Gen.listOfN(3, CaseClassDataGen(t.typeArgs.head.asTypeTag)).map(_.toSet).asInstanceOf[Gen[T]]
       case t if t.erasure =:= typeOf[Map[_, Any]] =>
-        Gen.nonEmptyMap(Gen.zip(
+        Gen.mapOfN(3, Gen.zip(
           CaseClassDataGen(t.typeArgs.head.asTypeTag),
           CaseClassDataGen(t.typeArgs.last.asTypeTag))).asInstanceOf[Gen[T]]
       case _ =>
@@ -61,11 +61,11 @@ object CaseClassDataGen {
               case t if t.erasure =:= typeOf[Option[Any]] =>
                 Gen.option(CaseClassDataGen(param.info.typeArgs.head.asTypeTag))
               case t if t.erasure =:= typeOf[Seq[Any]] || t.erasure =:= typeOf[List[Any]] =>
-                Gen.nonEmptyListOf(CaseClassDataGen(param.info.typeArgs.head.asTypeTag))
+                Gen.listOfN(3, CaseClassDataGen(param.info.typeArgs.head.asTypeTag))
               case t if t.erasure =:= typeOf[Set[_]] =>
-                Gen.nonEmptyListOf(CaseClassDataGen(param.info.typeArgs.head.asTypeTag)).map(_.toSet)
+                Gen.listOfN(3, CaseClassDataGen(param.info.typeArgs.head.asTypeTag)).map(_.toSet)
               case t if t.erasure =:= typeOf[Map[_, Any]] =>
-                Gen.nonEmptyMap(Gen.zip(
+                Gen.mapOfN(3, Gen.zip(
                   CaseClassDataGen(param.info.typeArgs.head.asTypeTag),
                   CaseClassDataGen(param.info.typeArgs.last.asTypeTag)))
               case t if typeSignature.typeSymbol.isClass
