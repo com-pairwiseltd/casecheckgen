@@ -3,6 +3,8 @@ package com.pairwiseltd.casecheckgen
 import com.pairwiseltd.casecheckgen.utils.TypeTagUtils._
 import org.scalacheck.Gen
 
+import java.sql.{Date, Timestamp}
+import java.time.{Instant, LocalDate}
 import scala.reflect.runtime.universe._
 import scala.util.{Failure, Success, Try}
 
@@ -19,18 +21,17 @@ object CaseClassDataGen {
       case t if t =:= typeOf[Float] => Gen.chooseNum(Float.MinValue, Float.MaxValue).asInstanceOf[Gen[T]]
       case t if t =:= typeOf[Double] => Gen.chooseNum(Double.MinValue, Double.MaxValue).asInstanceOf[Gen[T]]
       case t if t =:= typeOf[String] => Gen.alphaNumStr.asInstanceOf[Gen[T]]
-      case t if t =:= typeOf[Option[Int]] => Gen.option(Gen.chooseNum(Int.MinValue, Int.MaxValue)).asInstanceOf[Gen[T]]
-      case t if t =:= typeOf[Option[Byte]] => Gen.option(Gen.chooseNum(Byte.MinValue, Byte.MaxValue)).asInstanceOf[Gen[T]]
-      case t if t =:= typeOf[Option[Short]] => Gen.option(Gen.chooseNum(Short.MinValue, Short.MaxValue)).asInstanceOf[Gen[T]]
-      case t if t =:= typeOf[Option[Long]] => Gen.option(Gen.chooseNum(Long.MinValue, Long.MaxValue)).asInstanceOf[Gen[T]]
-      case t if t =:= typeOf[Option[Boolean]] => Gen.option(Gen.oneOf(true, false)).asInstanceOf[Gen[T]]
-      case t if t =:= typeOf[Option[Float]] => Gen.option(Gen.chooseNum(Float.MinValue, Float.MaxValue)).asInstanceOf[Gen[T]]
-      case t if t =:= typeOf[Option[Double]] => Gen.option(Gen.chooseNum(Double.MinValue, Double.MaxValue)).asInstanceOf[Gen[T]]
-      case t if t =:= typeOf[Option[String]] => Gen.option(Gen.alphaNumStr).asInstanceOf[Gen[T]]
+      case t if t =:= typeOf[Timestamp] => Gen
+        .chooseNum(0, Instant.now.getEpochSecond)
+        .map(epochSecond => Timestamp.from(Instant.ofEpochSecond(epochSecond))).asInstanceOf[Gen[T]]
+      case t if t =:= typeOf[Date] => Gen
+        .chooseNum(LocalDate.of(1970, 1, 1).toEpochDay, LocalDate.now.toEpochDay)
+        .map(days => new Date(LocalDate.ofEpochDay(days).toEpochDay)).asInstanceOf[Gen[T]]
       case t if t.erasure =:= typeOf[Option[Any]] =>
         Gen.option(CaseClassDataGen(t.typeArgs.head.asTypeTag)).asInstanceOf[Gen[T]]
       case t if t.erasure =:= typeOf[Seq[Any]] || t.erasure =:= typeOf[List[Any]] =>
-        Gen.nonEmptyListOf(CaseClassDataGen(t.typeArgs.head.asTypeTag)).asInstanceOf[Gen[T]]
+        Gen.nonEmptyListOf(CaseClassDataGen(t.typeArgs.head.asTypeTag))
+          .asInstanceOf[Gen[T]]
       case t if t.erasure =:= typeOf[Set[_]] =>
         Gen.nonEmptyListOf(CaseClassDataGen(t.typeArgs.head.asTypeTag)).map(_.toSet).asInstanceOf[Gen[T]]
       case t if t.erasure =:= typeOf[Map[_, Any]] =>
@@ -53,14 +54,8 @@ object CaseClassDataGen {
               case t if t =:= typeOf[Float] => CaseClassDataGen[Float]
               case t if t =:= typeOf[Double] => CaseClassDataGen[Double]
               case t if t =:= typeOf[String] => CaseClassDataGen[String]
-              case t if t =:= typeOf[Option[Int]] => Gen.option(CaseClassDataGen[Int])
-              case t if t =:= typeOf[Option[Byte]] => Gen.option(CaseClassDataGen[Byte])
-              case t if t =:= typeOf[Option[Short]] => Gen.option(CaseClassDataGen[Short])
-              case t if t =:= typeOf[Option[Long]] => Gen.option(CaseClassDataGen[Long])
-              case t if t =:= typeOf[Option[Boolean]] => Gen.option(CaseClassDataGen[Boolean])
-              case t if t =:= typeOf[Option[Float]] => Gen.option(CaseClassDataGen[Float])
-              case t if t =:= typeOf[Option[Double]] => Gen.option(CaseClassDataGen[Double])
-              case t if t =:= typeOf[Option[String]] => Gen.option(CaseClassDataGen[String])
+              case t if t =:= typeOf[Timestamp] => CaseClassDataGen[Timestamp]
+              case t if t =:= typeOf[Date] => CaseClassDataGen[Date]
               case t if t.erasure =:= typeOf[Option[Any]] =>
                 Gen.option(CaseClassDataGen(param.info.typeArgs.head.asTypeTag))
               case t if t.erasure =:= typeOf[Seq[Any]] || t.erasure =:= typeOf[List[Any]] =>
