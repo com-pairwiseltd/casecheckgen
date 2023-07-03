@@ -5,6 +5,6 @@ case class SimpleCaseClassWithSeqHKT(aSequentialInt: Seq[Int],
                                      aSequentialBoolean: Seq[Boolean],
                                      aSequentialLong: Seq[Long],
                                      aSequentialShort: Seq[Short],
-                                     aSequentialByte: Seq[Byte],
+                                     aSequentialBigDecimal: Seq[BigDecimal],
                                      aSequentialFloat: Seq[Float],
                                      aSequentialDouble: Seq[Double])

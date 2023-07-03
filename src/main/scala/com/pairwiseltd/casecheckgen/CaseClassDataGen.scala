@@ -20,6 +20,7 @@ object CaseClassDataGen {
       case t if t =:= typeOf[Boolean] => Gen.oneOf(true, false).asInstanceOf[Gen[T]]
       case t if t =:= typeOf[Float] => Gen.chooseNum(Float.MinValue, Float.MaxValue).asInstanceOf[Gen[T]]
       case t if t =:= typeOf[Double] => Gen.chooseNum(Double.MinValue, Double.MaxValue).asInstanceOf[Gen[T]]
+      case t if t =:= typeOf[BigDecimal] => Gen.chooseNum(Double.MinValue, Double.MaxValue).map(BigDecimal.apply).asInstanceOf[Gen[T]]
       case t if t =:= typeOf[String] => Gen.alphaNumStr.asInstanceOf[Gen[T]]
       case t if t =:= typeOf[Timestamp] => Gen
         .chooseNum(0, Instant.now.getEpochSecond)
@@ -53,6 +54,7 @@ object CaseClassDataGen {
               case t if t =:= typeOf[Boolean] => CaseClassDataGen[Boolean]
               case t if t =:= typeOf[Float] => CaseClassDataGen[Float]
               case t if t =:= typeOf[Double] => CaseClassDataGen[Double]
+              case t if t =:= typeOf[BigDecimal] => CaseClassDataGen[BigDecimal]
               case t if t =:= typeOf[String] => CaseClassDataGen[String]
               case t if t =:= typeOf[Timestamp] => CaseClassDataGen[Timestamp]
               case t if t =:= typeOf[Date] => CaseClassDataGen[Date]

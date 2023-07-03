@@ -6,5 +6,5 @@ case class SimpleCaseClassWithSetHKT(aSetOfInt: Set[Int],
                                      aSetOfLong: Set[Long],
                                      aSetOfShort: Set[Short],
                                      aSetOfByte: Set[Byte],
-                                     aSetOfFloat: Set[Float],
+                                     aSetOfBigDecimal: Set[BigDecimal],
                                      aSetOfDouble: Set[Double])
