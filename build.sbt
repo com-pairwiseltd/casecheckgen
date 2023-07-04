@@ -1,6 +1,6 @@
 val Scala212 = "2.12.18"
 val Scala213 = "2.13.11"
-val Scala3 = "3.3.0"
+//val Scala3 = "3.3.0"
 
 
 ThisBuild / scalaVersion := Scala213
@@ -12,9 +12,10 @@ lazy val root = (project in file("."))
   .settings(
     name := "casecheckgen",
     libraryDependencies ++= Seq("org.scalacheck" %% "scalacheck" % "1.17.0",
-      "org.scala-lang" % "scala-reflect" % "2.13.10",
+      "org.scala-lang" % "scala-reflect" % "2.13.11",
       "org.scalatest" %% "scalatest" % "3.2.14" % Test,
-      "org.scalatestplus" %% "scalacheck-1-15" % "3.2.3.0" % Test)
+      "org.scalatestplus" %% "scalacheck-1-17" % "3.2.16.0" % Test
+    )
   )
 
 coverageFailOnMinimum := true
@@ -25,7 +26,7 @@ import com.github.sbt.findbugs.FindbugsPlugin.autoImport._
 
 findbugsExcludeFilters := Some(xml.XML.loadFile("findbugs-exclude.xml"))
 
-crossScalaVersions := Seq(Scala3, Scala212, Scala213)
+crossScalaVersions := Seq(Scala212, Scala213)
 
 
 

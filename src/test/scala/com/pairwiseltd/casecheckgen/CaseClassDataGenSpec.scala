@@ -14,7 +14,7 @@ class CaseClassDataGenSpec extends AnyWordSpec
     "called with a simple case class type" should {
       "create a simple case class generator to be used with scalacheck forAll quantifier" in {
         val property = forAll(CaseClassDataGen[SimpleCaseClass]) { simple =>
-          simple.productArity == 11
+          simple.productArity == 15
         }
         check(property)
       }
@@ -117,7 +117,7 @@ class CaseClassDataGenSpec extends AnyWordSpec
       "create a nested case class generator to be used with scalacheck forAll quantifier" in {
         val property = forAll(CaseClassDataGen[NestedCaseClass]) { nestedCaseClass =>
           nestedCaseClass.productArity == 1 &&
-            nestedCaseClass.simple.productArity == 11
+            nestedCaseClass.simple.productArity == 15
         }
         check(property)
       }
@@ -128,7 +128,7 @@ class CaseClassDataGenSpec extends AnyWordSpec
         val property = forAll(CaseClassDataGen[NestedCaseClassWithOptionHKT]) { nestedCaseClassWithOptionHKT =>
           nestedCaseClassWithOptionHKT.productArity == 1 &&
             ((nestedCaseClassWithOptionHKT.simpleOption.isDefined &&
-              nestedCaseClassWithOptionHKT.simpleOption.map(_.productArity) == Some(11)) ||
+              nestedCaseClassWithOptionHKT.simpleOption.map(_.productArity) == Some(15)) ||
               nestedCaseClassWithOptionHKT.simpleOption.isEmpty)
         }
         check(property)
@@ -148,7 +148,7 @@ class CaseClassDataGenSpec extends AnyWordSpec
         val property = forAll(CaseClassDataGen[NestedCaseClassWithListHKT]) { nestedCaseClassWithListHKT =>
           nestedCaseClassWithListHKT.productArity == 1 &&
             ((!nestedCaseClassWithListHKT.simpleList.isEmpty &&
-              nestedCaseClassWithListHKT.simpleList.headOption.map(_.productArity) == Some(11)) ||
+              nestedCaseClassWithListHKT.simpleList.headOption.map(_.productArity) == Some(15)) ||
               nestedCaseClassWithListHKT.simpleList.isEmpty)
         }
         check(property)
@@ -160,7 +160,7 @@ class CaseClassDataGenSpec extends AnyWordSpec
 
           nestedCaseClassWithSeqHKT.productArity == 1 &&
             ((!nestedCaseClassWithSeqHKT.simpleSeq.isEmpty &&
-              nestedCaseClassWithSeqHKT.simpleSeq.headOption.map(_.productArity) == Some(11)) ||
+              nestedCaseClassWithSeqHKT.simpleSeq.headOption.map(_.productArity) == Some(15)) ||
               nestedCaseClassWithSeqHKT.simpleSeq.isEmpty)
         }
         check(property)
@@ -187,7 +187,7 @@ class CaseClassDataGenSpec extends AnyWordSpec
         val property = forAll(CaseClassDataGen[NestedCaseClassWithSetHKT]) { nestedCaseClassWithSetHKT =>
           nestedCaseClassWithSetHKT.productArity == 1 &&
             ((!nestedCaseClassWithSetHKT.simpleSet.isEmpty &&
-              nestedCaseClassWithSetHKT.simpleSet.headOption.map(_.productArity) == Some(11)) ||
+              nestedCaseClassWithSetHKT.simpleSet.headOption.map(_.productArity) == Some(15)) ||
               nestedCaseClassWithSetHKT.simpleSet.isEmpty)
         }
         check(property)

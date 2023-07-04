@@ -4,7 +4,7 @@ import com.pairwiseltd.casecheckgen.utils.TypeTagUtils._
 import org.scalacheck.Gen
 
 import java.sql.{Date, Timestamp}
-import java.time.{Instant, LocalDate}
+import java.time.{Instant, LocalDate, LocalDateTime, OffsetDateTime, ZoneId, ZoneOffset, ZonedDateTime}
 import scala.reflect.runtime.universe._
 import scala.util.{Failure, Success, Try}
 
@@ -12,6 +12,8 @@ object CaseClassDataGen {
   private val mirror = runtimeMirror(getClass.getClassLoader)
 
   def apply[T](implicit tag: TypeTag[T]): Gen[T] = {
+    val dateRangeGen = Gen.chooseNum(LocalDate.of(1970, 1, 1).toEpochDay, LocalDate.now.toEpochDay)
+    val dateTimeRangeGen = Gen.chooseNum(0, Instant.now.getEpochSecond)
     typeOf[T] match {
       case t if t =:= typeOf[Int] => Gen.chooseNum(Int.MinValue, Int.MaxValue).asInstanceOf[Gen[T]]
       case t if t =:= typeOf[Byte] => Gen.chooseNum(Byte.MinValue, Byte.MaxValue).asInstanceOf[Gen[T]]
@@ -22,12 +24,18 @@ object CaseClassDataGen {
       case t if t =:= typeOf[Double] => Gen.chooseNum(Double.MinValue, Double.MaxValue).asInstanceOf[Gen[T]]
       case t if t =:= typeOf[BigDecimal] => Gen.chooseNum(Double.MinValue, Double.MaxValue).map(BigDecimal.apply).asInstanceOf[Gen[T]]
       case t if t =:= typeOf[String] => Gen.alphaNumStr.asInstanceOf[Gen[T]]
-      case t if t =:= typeOf[Timestamp] => Gen
-        .chooseNum(0, Instant.now.getEpochSecond)
+      case t if t =:= typeOf[Timestamp] => dateTimeRangeGen
         .map(epochSecond => Timestamp.from(Instant.ofEpochSecond(epochSecond))).asInstanceOf[Gen[T]]
-      case t if t =:= typeOf[Date] => Gen
-        .chooseNum(LocalDate.of(1970, 1, 1).toEpochDay, LocalDate.now.toEpochDay)
+      case t if t =:= typeOf[Date] => dateRangeGen
         .map(days => new Date(LocalDate.ofEpochDay(days).toEpochDay)).asInstanceOf[Gen[T]]
+      case t if t =:= typeOf[LocalDate] => dateRangeGen
+        .map(days => LocalDate.ofEpochDay(days)).asInstanceOf[Gen[T]]
+      case t if t =:= typeOf[LocalDateTime] => dateTimeRangeGen
+        .map(epochSecond => LocalDateTime.ofEpochSecond(epochSecond, 0, ZoneOffset.UTC)).asInstanceOf[Gen[T]]
+      case t if t =:= typeOf[OffsetDateTime] => dateTimeRangeGen
+        .map(epochSecond => OffsetDateTime.ofInstant(Instant.ofEpochSecond(epochSecond), ZoneId.of("UTC"))).asInstanceOf[Gen[T]]
+      case t if t =:= typeOf[ZonedDateTime] => dateTimeRangeGen
+        .map(epochSecond => ZonedDateTime.ofInstant(Instant.ofEpochSecond(epochSecond), ZoneId.of("UTC"))).asInstanceOf[Gen[T]]
       case t if t.erasure =:= typeOf[Option[Any]] =>
         Gen.option(CaseClassDataGen(t.typeArgs.head.asTypeTag)).asInstanceOf[Gen[T]]
       case t if t.erasure =:= typeOf[Seq[Any]] || t.erasure =:= typeOf[List[Any]] =>
@@ -58,6 +66,10 @@ object CaseClassDataGen {
               case t if t =:= typeOf[String] => CaseClassDataGen[String]
               case t if t =:= typeOf[Timestamp] => CaseClassDataGen[Timestamp]
               case t if t =:= typeOf[Date] => CaseClassDataGen[Date]
+              case t if t =:= typeOf[LocalDate] => CaseClassDataGen[LocalDate]
+              case t if t =:= typeOf[LocalDateTime] => CaseClassDataGen[LocalDateTime]
+              case t if t =:= typeOf[OffsetDateTime] => CaseClassDataGen[OffsetDateTime]
+              case t if t =:= typeOf[ZonedDateTime] => CaseClassDataGen[ZonedDateTime]
               case t if t.erasure =:= typeOf[Option[Any]] =>
                 Gen.option(CaseClassDataGen(param.info.typeArgs.head.asTypeTag))
               case t if t.erasure =:= typeOf[Seq[Any]] || t.erasure =:= typeOf[List[Any]] =>
@@ -68,7 +80,7 @@ object CaseClassDataGen {
                 Gen.mapOfN(3, Gen.zip(
                   CaseClassDataGen(param.info.typeArgs.head.asTypeTag),
                   CaseClassDataGen(param.info.typeArgs.last.asTypeTag)))
-              case t if typeSignature.typeSymbol.isClass
+              case _ if typeSignature.typeSymbol.isClass
                 && typeSignature.typeSymbol.asClass.isCaseClass => CaseClassDataGen(param.asTypeTag)
               case t =>
                 throw new IllegalArgumentException(s"doesn't support generating $t")
