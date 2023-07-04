@@ -20,6 +20,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: 11
+          distribution: 'adopt'
 
       - name: Run sbt clean, coverage, and test for Scala 2.12
         run: sbt clean coverage test coverageReport
@@ -37,9 +38,9 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: 11
+          distribution: 'adopt'
 
       - name: Run sbt clean, coverage, and test for Scala 2.13
         run: sbt clean coverage test coverageReport
         env:
           SCALA_VERSION: 2.13.x
-
