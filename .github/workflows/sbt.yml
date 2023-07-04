@@ -1,0 +1,45 @@
+name: sbt cross-compilation pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build_212:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11
+
+      - name: Run sbt clean, coverage, and test for Scala 2.12
+        run: sbt clean coverage test coverageReport
+        env:
+          SCALA_VERSION: 2.12.x
+
+  build_213:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11
+
+      - name: Run sbt clean, coverage, and test for Scala 2.13
+        run: sbt clean coverage test coverageReport
+        env:
+          SCALA_VERSION: 2.13.x
+
