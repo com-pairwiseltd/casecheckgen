@@ -4,7 +4,6 @@ val Scala213 = "2.13.11"
 
 
 ThisBuild / scalaVersion := Scala213
-ThisBuild / version := "0.1.0-SNAPSHOT"
 ThisBuild / organization := "com.pairwiseltd"
 ThisBuild / organizationName := "Pairwise Software Ltd."
 
@@ -27,6 +26,8 @@ import com.github.sbt.findbugs.FindbugsPlugin.autoImport._
 findbugsExcludeFilters := Some(xml.XML.loadFile("findbugs-exclude.xml"))
 
 crossScalaVersions := Seq(Scala212, Scala213)
+
+enablePlugins(ReleasePlugin)
 
 
 
