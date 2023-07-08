@@ -8,7 +8,7 @@ import java.time.{Instant, LocalDate, LocalDateTime, OffsetDateTime, ZoneId, Zon
 import scala.reflect.runtime.universe._
 import scala.util.{Failure, Success, Try}
 
-object CaseClassDataGen {
+object CaseCheckGen {
   private val mirror = runtimeMirror(getClass.getClassLoader)
 
   def apply[T](implicit tag: TypeTag[T]): Gen[T] = {
@@ -37,16 +37,16 @@ object CaseClassDataGen {
       case t if t =:= typeOf[ZonedDateTime] => dateTimeRangeGen
         .map(epochSecond => ZonedDateTime.ofInstant(Instant.ofEpochSecond(epochSecond), ZoneId.of("UTC"))).asInstanceOf[Gen[T]]
       case t if t.erasure =:= typeOf[Option[Any]] =>
-        Gen.option(CaseClassDataGen(t.typeArgs.head.asTypeTag)).asInstanceOf[Gen[T]]
+        Gen.option(CaseCheckGen(t.typeArgs.head.asTypeTag)).asInstanceOf[Gen[T]]
       case t if t.erasure =:= typeOf[Seq[Any]] || t.erasure =:= typeOf[List[Any]] =>
-        Gen.listOfN(3, CaseClassDataGen(t.typeArgs.head.asTypeTag))
+        Gen.listOfN(3, CaseCheckGen(t.typeArgs.head.asTypeTag))
           .asInstanceOf[Gen[T]]
       case t if t.erasure =:= typeOf[Set[_]] =>
-        Gen.listOfN(3, CaseClassDataGen(t.typeArgs.head.asTypeTag)).map(_.toSet).asInstanceOf[Gen[T]]
+        Gen.listOfN(3, CaseCheckGen(t.typeArgs.head.asTypeTag)).map(_.toSet).asInstanceOf[Gen[T]]
       case t if t.erasure =:= typeOf[Map[_, Any]] =>
         Gen.mapOfN(3, Gen.zip(
-          CaseClassDataGen(t.typeArgs.head.asTypeTag),
-          CaseClassDataGen(t.typeArgs.last.asTypeTag))).asInstanceOf[Gen[T]]
+          CaseCheckGen(t.typeArgs.head.asTypeTag),
+          CaseCheckGen(t.typeArgs.last.asTypeTag))).asInstanceOf[Gen[T]]
       case _ =>
         Try {
           val method = typeOf[T].companion.decl(TermName("apply")).asMethod
@@ -55,33 +55,33 @@ object CaseClassDataGen {
           val args = params.map { param =>
             val typeSignature = param.typeSignature
             param.info match {
-              case t if t =:= typeOf[Int] => CaseClassDataGen[Int]
-              case t if t =:= typeOf[Byte] => CaseClassDataGen[Byte]
-              case t if t =:= typeOf[Short] => CaseClassDataGen[Short]
-              case t if t =:= typeOf[Long] => CaseClassDataGen[Long]
-              case t if t =:= typeOf[Boolean] => CaseClassDataGen[Boolean]
-              case t if t =:= typeOf[Float] => CaseClassDataGen[Float]
-              case t if t =:= typeOf[Double] => CaseClassDataGen[Double]
-              case t if t =:= typeOf[BigDecimal] => CaseClassDataGen[BigDecimal]
-              case t if t =:= typeOf[String] => CaseClassDataGen[String]
-              case t if t =:= typeOf[Timestamp] => CaseClassDataGen[Timestamp]
-              case t if t =:= typeOf[Date] => CaseClassDataGen[Date]
-              case t if t =:= typeOf[LocalDate] => CaseClassDataGen[LocalDate]
-              case t if t =:= typeOf[LocalDateTime] => CaseClassDataGen[LocalDateTime]
-              case t if t =:= typeOf[OffsetDateTime] => CaseClassDataGen[OffsetDateTime]
-              case t if t =:= typeOf[ZonedDateTime] => CaseClassDataGen[ZonedDateTime]
+              case t if t =:= typeOf[Int] => CaseCheckGen[Int]
+              case t if t =:= typeOf[Byte] => CaseCheckGen[Byte]
+              case t if t =:= typeOf[Short] => CaseCheckGen[Short]
+              case t if t =:= typeOf[Long] => CaseCheckGen[Long]
+              case t if t =:= typeOf[Boolean] => CaseCheckGen[Boolean]
+              case t if t =:= typeOf[Float] => CaseCheckGen[Float]
+              case t if t =:= typeOf[Double] => CaseCheckGen[Double]
+              case t if t =:= typeOf[BigDecimal] => CaseCheckGen[BigDecimal]
+              case t if t =:= typeOf[String] => CaseCheckGen[String]
+              case t if t =:= typeOf[Timestamp] => CaseCheckGen[Timestamp]
+              case t if t =:= typeOf[Date] => CaseCheckGen[Date]
+              case t if t =:= typeOf[LocalDate] => CaseCheckGen[LocalDate]
+              case t if t =:= typeOf[LocalDateTime] => CaseCheckGen[LocalDateTime]
+              case t if t =:= typeOf[OffsetDateTime] => CaseCheckGen[OffsetDateTime]
+              case t if t =:= typeOf[ZonedDateTime] => CaseCheckGen[ZonedDateTime]
               case t if t.erasure =:= typeOf[Option[Any]] =>
-                Gen.option(CaseClassDataGen(param.info.typeArgs.head.asTypeTag))
+                Gen.option(CaseCheckGen(param.info.typeArgs.head.asTypeTag))
               case t if t.erasure =:= typeOf[Seq[Any]] || t.erasure =:= typeOf[List[Any]] =>
-                Gen.listOfN(3, CaseClassDataGen(param.info.typeArgs.head.asTypeTag))
+                Gen.listOfN(3, CaseCheckGen(param.info.typeArgs.head.asTypeTag))
               case t if t.erasure =:= typeOf[Set[_]] =>
-                Gen.listOfN(3, CaseClassDataGen(param.info.typeArgs.head.asTypeTag)).map(_.toSet)
+                Gen.listOfN(3, CaseCheckGen(param.info.typeArgs.head.asTypeTag)).map(_.toSet)
               case t if t.erasure =:= typeOf[Map[_, Any]] =>
                 Gen.mapOfN(3, Gen.zip(
-                  CaseClassDataGen(param.info.typeArgs.head.asTypeTag),
-                  CaseClassDataGen(param.info.typeArgs.last.asTypeTag)))
+                  CaseCheckGen(param.info.typeArgs.head.asTypeTag),
+                  CaseCheckGen(param.info.typeArgs.last.asTypeTag)))
               case _ if typeSignature.typeSymbol.isClass
-                && typeSignature.typeSymbol.asClass.isCaseClass => CaseClassDataGen(param.asTypeTag)
+                && typeSignature.typeSymbol.asClass.isCaseClass => CaseCheckGen(param.asTypeTag)
               case t =>
                 throw new IllegalArgumentException(s"doesn't support generating $t")
             }
