@@ -1,10 +1,13 @@
 package com.pairwiseltd.casecheckgen
 
 import com.pairwiseltd.casecheckgen.model._
+import org.scalacheck.Gen
 import org.scalacheck.Prop.forAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.scalacheck.Checkers
+
+import scala.collection.immutable.ArraySeq
 
 class CaseCheckGenSpec extends AnyWordSpec
   with Matchers
@@ -233,6 +236,26 @@ class CaseCheckGenSpec extends AnyWordSpec
         check(property)
       }
 
+    }
+  }
+
+  "called with an unsupported HKT with a proper custom handler suited for the unsupported HKT" should {
+    "create a generator to be used with scalacheck forAll quantifier" in {
+      import com.pairwiseltd.casecheckgen.utils.TypeTagUtils._
+
+      import scala.reflect.runtime.universe._
+      val typeTag = implicitly[TypeTag[SimpleCaseClassWithArrayHKT]]
+
+      def customHandler: PartialFunction[Type, Gen[Any]] = {
+        case t if t.asTypeTag.tpe.typeSymbol == typeOf[ArraySeq[Any]].typeSymbol =>
+          Gen.listOfN(3, CaseCheckGen(tag = t.typeArgs.head.asTypeTag, customHandler = Some(customHandler))).map(x => ArraySeq(x))
+      }
+
+      val property = forAll(CaseCheckGen[SimpleCaseClassWithArrayHKT](tag = typeTag,
+        customHandler = Some(customHandler))) { p =>
+        true
+      }
+      check(property)
     }
   }
 }

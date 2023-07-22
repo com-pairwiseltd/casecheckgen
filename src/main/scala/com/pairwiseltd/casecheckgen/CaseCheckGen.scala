@@ -4,14 +4,18 @@ import com.pairwiseltd.casecheckgen.utils.TypeTagUtils._
 import org.scalacheck.Gen
 
 import java.sql.{Date, Timestamp}
-import java.time.{Instant, LocalDate, LocalDateTime, OffsetDateTime, ZoneId, ZoneOffset, ZonedDateTime}
+import java.time._
 import scala.reflect.runtime.universe._
 import scala.util.{Failure, Success, Try}
 
 object CaseCheckGen {
   private val mirror = runtimeMirror(getClass.getClassLoader)
 
-  def apply[T](implicit tag: TypeTag[T]): Gen[T] = {
+  def apply[T](implicit tag: TypeTag[T], customHandler: Option[PartialFunction[Type, Gen[Any]]] = None): Gen[T] = {
+    val defaultHandler: PartialFunction[Type, Gen[Any]] = {
+      case t =>
+        throw new IllegalArgumentException(s"doesn't support generating $t")
+    }
     val dateRangeGen = Gen.chooseNum(LocalDate.of(1970, 1, 1).toEpochDay, LocalDate.now.toEpochDay)
     val dateTimeRangeGen = Gen.chooseNum(0, Instant.now.getEpochSecond)
     typeOf[T] match {
@@ -83,7 +87,7 @@ object CaseCheckGen {
               case _ if typeSignature.typeSymbol.isClass
                 && typeSignature.typeSymbol.asClass.isCaseClass => CaseCheckGen(param.asTypeTag)
               case t =>
-                throw new IllegalArgumentException(s"doesn't support generating $t")
+                customHandler.map(c => c orElse defaultHandler).getOrElse(defaultHandler)(t)
             }
           }
           val invertedArgs = Gen.sequence[List[Any], Any](args)
