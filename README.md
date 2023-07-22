@@ -1,5 +1,5 @@
 # casecheckgen
-Effortless ScalaCheck Generator Creation for Case Classes
+Effortless scalaCheck generator creation for case classes published for the lazy!
 
 casecheckgen is an open source Scala library designed to streamline the process of generating Scalacheck generators 
 for Scala case classes. Writing generators for complex case classes in Scalacheck can be cumbersome, 
@@ -37,6 +37,27 @@ val property = forAll(CaseCheckGen[YourCaseClass]) { yourCaseClass =>
 check(property)
 ```
 
+Although the generator provided is not intended for direct use, customizing it with certain conditional generators for 
+specific specification testing becomes essential. This project streamlines the creation of default generators by 
+freeing developers from the burden of initial boilerplate code. Take a look at the example below to understand 
+how to apply various specification conditions effectively 
+
+```scala
+case class YourCaseClass(anInt: Int, aString: String, ...) // a case class with many fields where developer wants to impose
+// specific conditions for 2 fields only!
+
+val combinedGenerator = for {
+  yourCaseClass <- CaseCheckGen[YourCaseClass]
+  anInt <- Gen.chooseNum(0, 10)
+  aString <- Gen.oneOf(Seq("example1", "example2", ...))
+} yield yourCaseClass.copy(anInt = anInt, aString = aString)
+
+val property = forAll(combinedGenerator) { yourCaseClass =>
+  // assertions here.
+}
+check(property)
+```
+
 You can also add a custom handler for unsupported higher kinded types, collections. The below
 example is for unsupported HKT ArraySeq.
 
@@ -53,12 +74,13 @@ def customHandler: PartialFunction[Type, Gen[Any]] = {
     Gen.listOfN(3, CaseCheckGen(tag = t.typeArgs.head.asTypeTag, customHandler = Some(customHandler))).map(x => ArraySeq(x))
 }
 
-val property = forAll(CaseCheckGen[SimpleCaseClassWithArrayHKT](tag = typeTag,
-  customHandler = Some(customHandler))) { simpleCaseClassWithArrayHKT =>
+val property = forAll(CaseCheckGen[CaseClassWithUnsupportedHKT](tag = typeTag,
+  customHandler = Some(customHandler))) { caseClassWithUnsupportedHKT =>
   // assertions here.
 }
 check(property)
 ```
+
 
 
 ## Third-Party Libraries
