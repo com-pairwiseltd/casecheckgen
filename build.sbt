@@ -6,6 +6,7 @@ val Scala213 = "2.13.11"
 ThisBuild / scalaVersion := Scala213
 ThisBuild / organization := "com.pairwiseltd"
 ThisBuild / organizationName := "Pairwise Software Ltd."
+ThisBuild / version := "0.1.0-SNAPSHOT"
 
 lazy val root = (project in file("."))
   .settings(
@@ -27,8 +28,7 @@ findbugsExcludeFilters := Some(xml.XML.loadFile("findbugs-exclude.xml"))
 
 crossScalaVersions := Seq(Scala212, Scala213)
 
-enablePlugins(ReleasePlugin)
-
-
-
-// See https://www.scala-sbt.org/1.x/docs/Using-Sonatype.html for instructions on how to publish to Sonatype.
+sonatypeBundleDirectory := (ThisBuild / baseDirectory).value / target.value.getName / "sonatype-staging" / (ThisBuild / version).value
+publishTo := sonatypePublishToBundle.value
+ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
+ThisBuild / sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
